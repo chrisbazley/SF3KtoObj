@@ -1,0 +1,67 @@
+# Project:   SF3KtoObj
+# To use this makefile on RISC OS, you must set UnixEnv$sed$sfix and
+# UnixEnv$make$sfix to include ":debug:d" so that filename suffixes are
+# translated automatically into directory names
+
+# Tools
+CC = gcc
+Link = gcc
+# Make cannot understand rules which contain RISC OS path names such as /C:Macros.h as prerequisites, so strip them from the dynamic dependencies
+StripBadPre = sed -r 's@/[A-Za-z]+:[^ ]*@@g' < $*T.d
+DeleteTempDep = delete d.$*T
+
+# Toolflags:
+CCCommonFlags = -c -IC: -mlibscl -mthrowback -Wall -Wextra -Wsign-compare -pedantic -std=c99 -MMD -MP -MF $*T.d -o $@
+CCFlags = $(CCCommonFlags) -DNDEBUG -O3
+CCDebugFlags = $(CCCommonFlags) -g -DUSE_CBDEBUG -DDEBUG_OUTPUT -DFORTIFY
+LinkCommonFlags = -LC: -mlibscl -o $@
+LinkFlags = $(LinkCommonFlags) $(addprefix -l,$(ReleaseLibs))
+LinkDebugFlags = $(LinkCommonFlags) $(addprefix -l,$(DebugLibs))
+
+include MakeCommon
+
+DebugObjectsObj = $(addsuffix .debug,$(ObjectListObj))
+ReleaseObjectsObj = $(addsuffix .o,$(ObjectListObj))
+DebugObjectsChoc = $(addsuffix .debug,$(ObjectListChoc))
+ReleaseObjectsChoc = $(addsuffix .o,$(ObjectListChoc))
+DebugObjectsMtl = $(addsuffix .debug,$(ObjectListMtl))
+ReleaseObjectsMtl = $(addsuffix .o,$(ObjectListMtl))
+DebugLibs = Fortify CBDebug CBUtildbg GKeydbg Streamdbg 3dObjdbg
+ReleaseLibs = CBUtil GKey Stream 3dObj
+
+# Final targets:
+all: SF3KtoMtl SF3KtoObj SF3KtoMtlD SF3KtoObjD
+
+SF3KtoObj: $(ReleaseObjectsObj)
+	$(Link) $(LinkFlags) $(ReleaseObjectsObj)
+
+SF3KtoObjD: $(DebugObjectsObj)
+	$(Link) $(LinkDebugFlags) $(DebugObjectsObj)
+
+SF3KtoMtl: $(ReleaseObjectsMtl)
+	$(Link) $(LinkFlags) $(ReleaseObjectsMtl)
+
+SF3KtoMtlD: $(DebugObjectsMtl)
+	$(Link) $(LinkDebugFlags) $(DebugObjectsMtl)
+
+
+# User-editable dependencies:
+.SUFFIXES: .o .c .debug
+.c.debug:
+	$(CC) $(CCDebugFlags) $<
+	$(StripBadPre) > $*D.d
+	$(DeleteTempDep)
+.c.o:
+	$(CC) $(CCFlags) $<
+	$(StripBadPre) > $*.d
+	$(DeleteTempDep)
+
+# Static dependencies:
+
+# Dynamic dependencies:
+# These files are generated during compilation to track C header #includes.
+# It's not an error if they don't exist.
+-include $(addsuffix .d,$(ObjectListObj))
+-include $(addsuffix D.d,$(ObjectListObj))
+-include $(addsuffix .d,$(ObjectListMtl))
+-include $(addsuffix D.d,$(ObjectListMtl))
