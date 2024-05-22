@@ -7,7 +7,7 @@ Link = gcc
 # Toolflags:
 CCCommonFlags = -c -Wall -Wextra -Wsign-compare -pedantic -std=c99 -MMD -MP -MF $*.d -o $@
 CCFlags = $(CCCommonFlags) -DNDEBUG -O3
-CCDebugFlags = $(CCCommonFlags) -g -DUSE_CBDEBUG -DDEBUG_OUTPUT -DFORTIFY
+CCDebugFlags = $(CCCommonFlags) -g -DDEBUG_OUTPUT
 LinkCommonFlags = -o $@
 LinkFlags = $(LinkCommonFlags) $(addprefix -l,$(ReleaseLibs))
 LinkDebugFlags = $(LinkCommonFlags) $(addprefix -l,$(DebugLibs))
