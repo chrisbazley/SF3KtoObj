@@ -1,45 +1,57 @@
 # Project:   SF3KtoObj
 
 # Tools
-CC = cc
-Link = link
+CC = gcc
+Link = gcc
 
 # Toolflags:
-CCCommonFlags = -c -depend !Depend -IC: -throwback -fahi -apcs 3/32/fpe2/swst/fp/nofpr -memaccess -L22-S22-L41
-CCflags = $(CCCommonFlags) -DNDEBUG -Otime
-CCDebugFlags = $(CCCommonFlags) -g -DUSE_CBDEBUG -DFORTIFY -DDEBUG_OUTPUT
-Linkflags = -aif
-LinkDebugFlags = $(Linkflags) -d
+CCCommonFlags = -c -Wall -Wextra -Wsign-compare -pedantic -std=c99 -MMD -MP -MF $*.d -o $@
+CCFlags = $(CCCommonFlags) -DNDEBUG -O3
+CCDebugFlags = $(CCCommonFlags) -g -DUSE_CBDEBUG -DDEBUG_OUTPUT -DFORTIFY
+LinkCommonFlags = -o $@
+LinkFlags = $(LinkCommonFlags) $(addprefix -l,$(ReleaseLibs))
+LinkDebugFlags = $(LinkCommonFlags) $(addprefix -l,$(DebugLibs))
 
 include MakeCommon
 
-DebugObjectsObj = $(addprefix debug.,$(ObjectListObj))
-ReleaseObjectsObj = $(addprefix o.,$(ObjectListObj))
-DebugObjectsMtl = $(addprefix debug.,$(ObjectListMtl))
-ReleaseObjectsMtl = $(addprefix o.,$(ObjectListMtl))
-DebugLibs = C:o.Stubs Fortify:o.fortify C:o.CBDebugLib C:debug.CBUtilLib C:debug.3dObjLib C:debug.GKeyLib C:debug.StreamLib
-ReleaseLibs = C:o.StubsG C:o.CBUtilLib C:o.3dObjLib C:o.GKeyLib C:o.StreamLib
+DebugObjectsObj = $(addsuffix .debug,$(ObjectListObj))
+ReleaseObjectsObj = $(addsuffix .o,$(ObjectListObj))
+DebugObjectsChoc = $(addsuffix .debug,$(ObjectListChoc))
+ReleaseObjectsChoc = $(addsuffix .o,$(ObjectListChoc))
+DebugObjectsMtl = $(addsuffix .debug,$(ObjectListMtl))
+ReleaseObjectsMtl = $(addsuffix .o,$(ObjectListMtl))
+DebugLibs = CBUtildbg Streamdbg GKeydbg 3dObjdbg
+ReleaseLibs = CBUtil Stream GKey 3dObj
 
 # Final targets:
 all: SF3KtoMtl SF3KtoObj SF3KtoMtlD SF3KtoObjD
 
 SF3KtoObj: $(ReleaseObjectsObj)
-	$(Link) $(LinkFlags) -o $@ $(ReleaseObjectsObj) $(ReleaseLibs)
+	$(Link) $(ReleaseObjectsObj) $(LinkFlags)
 
 SF3KtoObjD: $(DebugObjectsObj)
-	$(Link) $(LinkDebugFlags) -o $@ $(DebugObjectsObj) $(DebugLibs)
+	$(Link) $(DebugObjectsObj) $(LinkDebugFlags)
 
 SF3KtoMtl: $(ReleaseObjectsMtl)
-	$(Link) $(LinkFlags) -o $@ $(ReleaseObjectsMtl) $(ReleaseLibs)
+	$(Link) $(ReleaseObjectsMtl) $(LinkFlags)
 
 SF3KtoMtlD: $(DebugObjectsMtl)
-	$(Link) $(LinkDebugFlags) -o $@ $(DebugObjectsMtl) $(DebugLibs)
+	$(Link) $(DebugObjectsMtl) $(LinkDebugFlags)
+
 
 # User-editable dependencies:
 .SUFFIXES: .o .c .debug
-.c.o:; $(CC) $(CCflags) -o $@ $<
-.c.debug:; $(CC) $(CCDebugFlags) -o $@ $<
+.c.debug:
+	$(CC) $(CCDebugFlags) $<
+.c.o:
+	$(CC) $(CCFlags) $<
 
 # Static dependencies:
 
 # Dynamic dependencies:
+# These files are generated during compilation to track C header #includes.
+# It's not an error if they don't exist.
+-include $(addsuffix .d,$(ObjectListObj))
+-include $(addsuffix D.d,$(ObjectListObj))
+-include $(addsuffix .d,$(ObjectListMtl))
+-include $(addsuffix D.d,$(ObjectListMtl))
