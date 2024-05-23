@@ -7,7 +7,7 @@
 #ifndef NAMES_H
 #define NAMES_H
 
-#include "SFFormats.h"
+#include "sfformats.h"
 
 const char *get_type_name(SFObjectType type);
 

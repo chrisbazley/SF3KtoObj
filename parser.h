@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "SFformats.h"
+#include "sfformats.h"
 
 #include "Reader.h"
 
