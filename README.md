@@ -928,12 +928,12 @@ The type of each directive is determined by whether its first bit is set:
    copied to the current output position. Otherwise, the number of bytes
    (0-511) to be copied is encoded using 9 bits.
 
-    If the read pointer is before the start of the output buffer then zeros
-  should be written at the output position until it becomes valid again. This
-  is a legitimate method of initialising areas of memory with zeros.
+     If the read pointer is before the start of the output buffer then zeros
+   should be written at the output position until it becomes valid again. This
+   is a legitimate method of initialising areas of memory with zeros.
 
-    It isn't possible to replicate the whole of the preceding 512 bytes in
-  one operation.
+     It isn't possible to replicate the whole of the preceding 512 bytes in
+   one operation.
 
 The decompressors written by the Fourth Dimension and David O'Shea always
 copy at least 1 byte from the source offset, even if the compressed bitstream
@@ -999,14 +999,14 @@ start address will be naturally word-aligned.
 
 In summary, the layout of a polygonal objects set is as follows:
 
-  Plot type definitions
-  For each object:
-    Explosion data
-    Miscellaneous attributes
-    Vertex data
-    Clip distance
-    Polygon data
-    Collision data
+ * Plot type definitions
+ * For each object:
+   * Explosion data
+   * Miscellaneous attributes
+   * Vertex data
+   * Clip distance
+   * Polygon data
+   * Collision data
 
 Plot type definitions:
 
@@ -1035,16 +1035,17 @@ the group to be plotted.
 not culled then normal vectors will also be calculated for individual
 polygons to determine whether they are facing the camera.
 
-  Offset  Size  Data
-       0     1  Bits 0-4: Operand - vector test governing whether or not to
-                                    cull the polygon group
-                                    (if action is not 0).
-                               OR   polygon group number (0..6) to be plotted
-                                    unconditionally (if action is 0).
-                Bits 5-7: Action - specifies conditions for culling the
-                                   group and whether to also cull individual
-                                   backfacing polygons.
-       1     1  Polygon group no. (0..6) to be plotted if action is not 0.
+|  Offset | Size | Data
+|---------|------|--------------------------------------------------------------
+|       0 |    1 | Bits 0-4: Operand - vector test governing whether or not to
+|         |      |                     cull the polygon group
+|         |      |                     (if action is not 0).
+|         |      |                OR   polygon group number (0..6) to be plotted
+|         |      |                     unconditionally (if action is 0).
+|         |      | Bits 5-7: Action - specifies conditions for culling the
+|         |      |                    group and whether to also cull individual
+|         |      |                    backfacing polygons.
+|       1 |    1 | Polygon group no. (0..6) to be plotted if action is not 0.
 
 Plot command actions:
 
@@ -1059,49 +1060,52 @@ Plot command actions:
 
 Explosions:
 
-  Offset  Size  Data
-       0     4  Last line number in explosion (signed)
-       4     4  Undefined
-       8   36n  Explosion line data (see format below)
-       8    36  Line 0
-      44    36  Line 1...
+|  Offset | Size | Data
+|---------|------|---------------------------------------
+|       0 |    4 | Last line number in explosion (signed)
+|       4 |    4 | Undefined
+|       8 |  36n | Explosion line data (see format below)
+|       8 |   36 | Line 0
+|      44 |   36 | Line 1...
 
 Explosion line:
 
-  Offset  Size  Data
-     0       4  x0 coordinate (signed)
-     4       4  y0 coordinate (signed)
-     8       4  z0 coordinate (signed)
-     12      4  x1 coordinate (signed)
-     16      4  y1 coordinate (signed)
-     20      4  z1 coordinate (signed)
-     24      4  Colour 1
-     28      4  Colour 2
-     32      4  Number of groups
+|  Offset | Size | Data
+|---------|------|-----------------------
+|     0   |    4 | x0 coordinate (signed)
+|     4   |    4 | y0 coordinate (signed)
+|     8   |    4 | z0 coordinate (signed)
+|     12  |    4 | x1 coordinate (signed)
+|     16  |    4 | y1 coordinate (signed)
+|     20  |    4 | z1 coordinate (signed)
+|     24  |    4 | Colour 1
+|     28  |    4 | Colour 2
+|     32  |    4 | Number of groups
 
   The x and y coordinates are sign-inverted upon loading.
 
 Object attributes:
 
-  Offset  Size  Data
-       0     1  Type (0 = Ground, 1 = Bit, 2 = Ship)
-       1     1  Coordinates scale (base-2 logarithm: 0..2)
-       2     1  Number of static vertices (minimum is 1) before all
-                coordinates are rotated around the Z axis. 0 means no
-                rotation.
-       3     1  Bits 0-3: y size of collision area in map tiles (ground
-                          objects only)
-                Bits 4-7: x size of collision area in map tiles (ground
-                          objects only)
-       4     2  x clip size/2 (unsigned, ship or ground objects only)
-       6     2  y clip size/2 (unsigned, ship or ground objects only)
-       8     1  Score/25 (ship or ground objects only)
-       9     1  Number of hits a ground object can take
-                  OR
-                minimum altitude/262144 for ship objects 13-15
-       10    1  Explosion style (ship or ground objects only)
-       11    1  Bits 0-3: Plot type
-                Bits 4-7: Highest polygon group number (0..6)
+|  Offset  | Size | Data
+|----------|------|---------------------------------------------------------
+|        0 |    1 | Type (0 = Ground, 1 = Bit, 2 = Ship)
+|        1 |    1 | Coordinates scale (base-2 logarithm: 0..2)
+|        2 |    1 | Number of static vertices (minimum is 1) before all
+|          |      | coordinates are rotated around the Z axis. 0 means no
+|          |      | rotation.
+|        3 |    1 | Bits 0-3: y size of collision area in map tiles (ground
+|          |      |           objects only)
+|          |      | Bits 4-7: x size of collision area in map tiles (ground
+|          |      |           objects only)
+|        4 |    2 | x clip size/2 (unsigned, ship or ground objects only)
+|        6 |    2 | y clip size/2 (unsigned, ship or ground objects only)
+|        8 |    1 | Score/25 (ship or ground objects only)
+|        9 |    1 | Number of hits a ground object can take
+|          |      |   OR
+|          |      | minimum altitude/262144 for ship objects 13-15
+|       10 |   1  | Explosion style (ship or ground objects only)
+|       11 |   1  | Bits 0-3: Plot type
+|          |      | Bits 4-7: Highest polygon group number (0..6)
 
 Vertexes:
 
@@ -1114,27 +1118,30 @@ position of the preceding vertex, therefore the order of vertex definition is
 significant. The first vertex's coordinates are relative to the object's
 centre. The offset range is +/-32 in each dimension.
 
-  Offset  Size  Data
-       0     1  Number of vertices in object
-       1    3n  Vertex definitions (see format below)
-       1     3  Vertex 0
-       4     3  Vertex 1..
+|  Offset | Size | Data
+|---------|------|---------------------------------------
+|       0 |    1 | Number of vertices in object
+|       1 |   3n | Vertex definitions (see format below)
+|       1 |    3 | Vertex 0
+|       4 |    3 | Vertex 1..
 
 Vertex definition:
 
-  Offset  Size  Data
-       0     1  x offset from previous vertex (85..90 or 96..104 or 110..115)
-       1     1  y offset from previous vertex
-       2     1  z offset from previous vertex
+|  Offset | Size | Data
+|---------|------|--------------------------------------------------------------
+|       0 |    1 | x offset from previous vertex (85..90 or 96..104 or 110..115)
+|       1 |    1 | y offset from previous vertex
+|       2 |    1 | z offset from previous vertex
 
 Interpretation of coordinate offsets:
 
-  Coordinate offset  Interpretation
-            85...90  -2 to the power of (90-n)
-            96...99  -1 / (2 to the power of (n-95)
-                100  0
-          101...104  +1 / (2 to the power of (105-n)
-          110...115  +2 to the power of (n-110)
+|  Coordinate offset | Interpretation
+|--------------------|--------------------------------
+|            85...90 | -2 to the power of (90-n)
+|            96...99 | -1 / (2 to the power of (n-95)
+|                100 | 0
+|          101...104 | +1 / (2 to the power of (105-n)
+|          110...115 | +2 to the power of (n-110)
 
 Clip distance and polygons:
 
@@ -1143,23 +1150,25 @@ shading. Polygons have the same number of vertexes as sides, and they are
 assumed to have at least 3 sides. Vertex indices are derived from the order
 of vertex definition.
 
-  Offset  Size  Data
-       0     4  Clip distance (signed). Polygons may need to be clipped
-                if the object is closer to the camera.
-       4     1  Number of polygons in object
-       5        Polygon definitions (see format below)...
+|  Offset | Size | Data
+|---------|------|--------------------------------------------------------
+|       0 |    4 | Clip distance (signed). Polygons may need to be clipped
+|         |      | if the object is closer to the camera.
+|       4 |    1 | Number of polygons in object
+|       5 |      | Polygon definitions (see format below)...
 
 Polygon definition:
 
-  Offset  Size  Data
-       0     1  Bits 0-3: Number of sides (n)
-                Bits 4-6: Group number (0..6 = Polygon group,
-                                        7    = Vector test group)
-                Bit 7: Most significant bit of the colour index (see 8.3)
-
-       1     1  First vertex index
-       2     1  Second vertex index...
-     1+n     1  Least significant 8 bits of the colour index (see 8.3)
+|  Offset | Size | Data
+|---------|------|----------------------------------------------------------
+|       0 |    1 | Bits 0-3: Number of sides (n)
+|         |      | Bits 4-6: Group number (0..6 = Polygon group,
+|         |      |                         7    = Vector test group)
+|         |      | Bit 7: Most significant bit of the colour index (see 8.3)
+|         |      |
+|       1 |    1 | First vertex index
+|       2 |    1 | Second vertex index...
+|     1+n |    1 | Least significant 8 bits of the colour index (see 8.3)
 
 Collision boxes:
 
@@ -1175,24 +1184,26 @@ significant bits will be discarded. Values greater than 131,071 or less than
 -130,560 are illegal because they cannot be encoded as an 8 bit value left-
 shifted by 9 bits.
 
-  Offset  Size  Data
-       0     4  Last collision box number (signed)
-       4     8  Undefined
-      12   28n  Collision boxes (see format below)
-      12    28  Collision box 0
-      40    28  Collision box 1...
+|  Offset | Size | Data
+|---------|------|-----------------------------------
+|       0 |    4 | Last collision box number (signed)
+|       4 |    8 | Undefined
+|      12 |  28n | Collision boxes (see format below)
+|      12 |   28 | Collision box 0
+|      40 |   28 | Collision box 1...
 
 Collision box:
 
-  Offset  Size  Data
-       0     1  Type (unused)
-       1     3  Undefined
-       4     4  x0 coordinate (signed; -130560 to 131071)
-       8     4  y0 coordinate (signed; -130560 to 131071)
-      12     4  z0 coordinate (signed; -130560 to 131071)
-      16     4  x1 coordinate (signed; -130560 to 131071)
-      20     4  y1 coordinate (signed; -130560 to 131071)
-      24     4  z1 coordinate (signed; -130560 to 131071)
+|  Offset | Size | Data
+|---------|------|------------------------------------------
+|       0 |    1 | Type (unused)
+|       1 |    3 | Undefined
+|       4 |    4 | x0 coordinate (signed; -130560 to 131071)
+|       8 |    4 | y0 coordinate (signed; -130560 to 131071)
+|      12 |    4 | z0 coordinate (signed; -130560 to 131071)
+|      16 |    4 | x1 coordinate (signed; -130560 to 131071)
+|      20 |    4 | y1 coordinate (signed; -130560 to 131071)
+|      24 |    4 | z1 coordinate (signed; -130560 to 131071)
 
 8.3 Palette file
 ----------------
@@ -1203,32 +1214,35 @@ liveries.
 
   When decompressed, the content is interpreted as follows.
 
-  Offset  Size  Data
-       0   256  Static colours (standard 256 colours)
-     256     4  Player's engine (4 colours)
-     260     4  Fighter's engine (4 colours)
-     264     4  Cruiser's engine (4 colours)
-     268     4  Super fighter's engine (4 colours)
-     272     4  Enemy ships fast flashing lights (4 colours)
-     276     4  Friendly ships fast flashing lights (4 colours)
-     280     4  Player's ship fast flashing lights (4 colours)
-     284     4  Ground object 1 medium flashing lights (4 colours)
-     288     4  Ground object 2 medium flashing lights (4 colours)
-     292     4  Miscellaneous medium flashing lights (4 colours)
-     296     4  Miscellaneous medium flashing lights (4 colours)
-     300    20  Player's ship livery
+|  Offset | Size | Data
+|---------|------|----------------------------------------------------
+|       0 |  256 | Static colours (standard 256 colours)
+|     256 |    4 | Player's engine (4 colours)
+|     260 |    4 | Fighter's engine (4 colours)
+|     264 |    4 | Cruiser's engine (4 colours)
+|     268 |    4 | Super fighter's engine (4 colours)
+|     272 |    4 | Enemy ships fast flashing lights (4 colours)
+|     276 |    4 | Friendly ships fast flashing lights (4 colours)
+|     280 |    4 | Player's ship fast flashing lights (4 colours)
+|     284 |    4 | Ground object 1 medium flashing lights (4 colours)
+|     288 |    4 | Ground object 2 medium flashing lights (4 colours)
+|     292 |    4 | Miscellaneous medium flashing lights (4 colours)
+|     296 |    4 | Miscellaneous medium flashing lights (4 colours)
+|     300 |   20 | Player's ship livery
 
   Physical colours are encoded using an additive RGB model with 4 bits
 per colour component. However, the 2 least-significant bits of each
 component (the 'tint' bits) must be equal for all three components.
-_____________________________________________________________________________
+
 Bit  | 7      | 6      | 5      | 4      | 3      | 2      | 1      | 0
+-----|--------|--------|--------|--------|--------|--------|--------|-------
 Role | B high | G high | G low  | R high | B low  | R low  | T high | T low
 
+```
 Red component:   (R high << 3) + (R low << 2) + (T high << 1) + T low
 Green component: (G high << 3) + (G low << 2) + (T high << 1) + T low
 Blue component:  (B high << 3) + (B low << 2) + (T high << 1) + T low
-
+```
 ('<< n' means 'left-shift by n binary places'.)
 
 For example, 42 (binary 00101010):
