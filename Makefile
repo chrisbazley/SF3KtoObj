@@ -20,8 +20,8 @@ DebugObjectsChoc = $(addsuffix .debug,$(ObjectListChoc))
 ReleaseObjectsChoc = $(addsuffix .o,$(ObjectListChoc))
 DebugObjectsMtl = $(addsuffix .debug,$(ObjectListMtl))
 ReleaseObjectsMtl = $(addsuffix .o,$(ObjectListMtl))
-DebugLibs = CBUtildbg Streamdbg GKeydbg 3dObjdbg
-ReleaseLibs = CBUtil Stream GKey 3dObj
+DebugLibs = CBUtildbg Streamdbg GKeydbg 3dObjdbg m
+ReleaseLibs = CBUtil Stream GKey 3dObj m
 
 # Final targets:
 all: SF3KtoMtl SF3KtoObj SF3KtoMtlD SF3KtoObjD
