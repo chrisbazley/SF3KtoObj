@@ -1037,14 +1037,10 @@ polygons to determine whether they are facing the camera.
 
 |  Offset | Size | Data
 |---------|------|--------------------------------------------------------------
-|       0 |    1 | Bits 0-4: Operand - vector test governing whether or not to
-|         |      |                     cull the polygon group
-|         |      |                     (if action is not 0).
-|         |      |                OR   polygon group number (0..6) to be plotted
-|         |      |                     unconditionally (if action is 0).
-|         |      | Bits 5-7: Action - specifies conditions for culling the
-|         |      |                    group and whether to also cull individual
-|         |      |                    backfacing polygons.
+|       0 |    1 | Bits 0-4: Operand - vector test governing whether or not to cull the polygon group (if action is not 0) 
+|         |      | OR
+|         |      | polygon group number (0..6) to be plotted unconditionally (if action is 0).
+|         |      | Bits 5-7: Action - specifies conditions for culling the group and whether to also cull individual backfacing polygons.
 |       1 |    1 | Polygon group no. (0..6) to be plotted if action is not 0.
 
 Plot command actions:
@@ -1090,13 +1086,9 @@ Object attributes:
 |----------|------|---------------------------------------------------------
 |        0 |    1 | Type (0 = Ground, 1 = Bit, 2 = Ship)
 |        1 |    1 | Coordinates scale (base-2 logarithm: 0..2)
-|        2 |    1 | Number of static vertices (minimum is 1) before all
-|          |      | coordinates are rotated around the Z axis. 0 means no
-|          |      | rotation.
-|        3 |    1 | Bits 0-3: y size of collision area in map tiles (ground
-|          |      |           objects only)
-|          |      | Bits 4-7: x size of collision area in map tiles (ground
-|          |      |           objects only)
+|        2 |    1 | Number of static vertices (minimum is 1) before all coordinates are rotated around the Z axis. 0 means no rotation.
+|        3 |    1 | Bits 0-3: y size of collision area in map tiles (ground objects only)
+|          |      | Bits 4-7: x size of collision area in map tiles (ground objects only)
 |        4 |    2 | x clip size/2 (unsigned, ship or ground objects only)
 |        6 |    2 | y clip size/2 (unsigned, ship or ground objects only)
 |        8 |    1 | Score/25 (ship or ground objects only)
@@ -1152,8 +1144,7 @@ of vertex definition.
 
 |  Offset | Size | Data
 |---------|------|--------------------------------------------------------
-|       0 |    4 | Clip distance (signed). Polygons may need to be clipped
-|         |      | if the object is closer to the camera.
+|       0 |    4 | Clip distance (signed). Polygons may need to be clipped if the object is closer to the camera.
 |       4 |    1 | Number of polygons in object
 |       5 |      | Polygon definitions (see format below)...
 
@@ -1162,10 +1153,8 @@ Polygon definition:
 |  Offset | Size | Data
 |---------|------|----------------------------------------------------------
 |       0 |    1 | Bits 0-3: Number of sides (n)
-|         |      | Bits 4-6: Group number (0..6 = Polygon group,
-|         |      |                         7    = Vector test group)
+|         |      | Bits 4-6: Group number (0..6 = Polygon group, 7 = Vector test group)
 |         |      | Bit 7: Most significant bit of the colour index (see 8.3)
-|         |      |
 |       1 |    1 | First vertex index
 |       2 |    1 | Second vertex index...
 |     1+n |    1 | Least significant 8 bits of the colour index (see 8.3)
@@ -1181,8 +1170,8 @@ them to be encoded as immediate constants in ARM instructions. This is
 equivalent to signed division rounding toward negative infinity (not zero).
 If the value is greater than 32,767 or less than -32,640 then the 9 least
 significant bits will be discarded. Values greater than 131,071 or less than
--130,560 are illegal because they cannot be encoded as an 8 bit value left-
-shifted by 9 bits.
+-130,560 are illegal because they cannot be encoded as an 8 bit value
+left-shifted by 9 bits.
 
 |  Offset | Size | Data
 |---------|------|-----------------------------------
