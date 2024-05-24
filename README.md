@@ -1045,14 +1045,15 @@ polygons to determine whether they are facing the camera.
 
 Plot command actions:
 
-  Number  Action
-       0  Always plot facing polygons in the group
-       1  Plot facing polygons in the group if the vector test passes
-       2  Plot facing polygons in the group if the vector test fails
-       3  Plot all polygons in the group if the vector test passes
-       4  Plot all polygons in the group if the vector test fails
-    5..6  Illegal (but behave like action 4)
-       7  End of commands for plot type if operand is 31, else illegal
+|  Number | Action
+|---------|---------------------------------------------------------------
+|       0 | Always plot facing polygons in the group
+|       1 | Plot facing polygons in the group if the vector test passes
+|       2 | Plot facing polygons in the group if the vector test fails
+|       3 | Plot all polygons in the group if the vector test passes
+|       4 | Plot all polygons in the group if the vector test fails
+|    5..6 | Illegal (but behave like action 4)
+|       7 | End of commands for plot type if operand is 31, else illegal
 
 Explosions:
 
