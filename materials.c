@@ -94,7 +94,8 @@ static void decode_colour(const int colour, double * const red,
 
 bool sf3k_to_mtl(Reader * const in, FILE * const out,
                  const int first, const int last,
-                 const double d, const int illum, double (* const ks)[3],
+                 const double d, const int illum,
+                 _Optional double (* const ks)[3],
                  const double ns, const int sharpness, const double ni,
                  double (* const tf)[3], const unsigned int flags)
 {

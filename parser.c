@@ -90,7 +90,7 @@ typedef struct {
 typedef struct
 {
   int frame;
-  const SFObjectColours *pal;
+  _Optional const SFObjectColours *pal;
   int false_colour;
 } ColourInfo;
 
@@ -308,13 +308,13 @@ static int parse_polygons(Reader * const r, const int object_count,
     ++(*npolygons)[group];
 
     if (convert) {
-      Primitive * const pp = group_add_primitive((*groups) + group);
+      _Optional Primitive * const pp = group_add_primitive((*groups) + group);
       if (pp == NULL) {
         fprintf(stderr, "Failed to allocate primitive memory "
                 "(polygon %d of object %d)\n", p, object_count);
         return -1;
       }
-      primitive_set_id(pp, group_get_num_primitives((*groups) + group));
+      primitive_set_id(&*pp, group_get_num_primitives((*groups) + group));
 
       /* We need to read the polygon definition into a temporary array so
          that we can get its colour byte at the end before outputting vertex
@@ -340,7 +340,7 @@ static int parse_polygons(Reader * const r, const int object_count,
         /* Vertex indices are stored using offset-1 encoding */
         --v;
 
-        if (primitive_add_side(pp, v) < 0) {
+        if (primitive_add_side(&*pp, v) < 0) {
           fprintf(stderr, "Failed to add side: too many sides? "
                           "(side %d of polygon %d of object %d)\n",
                   s, p, object_count);
@@ -352,17 +352,17 @@ static int parse_polygons(Reader * const r, const int object_count,
       /* Inverting the Z coordinate axis makes all polygons back-facing
          unless we also reverse the order in which their vertices are
          specified. */
-      primitive_reverse_sides(pp);
+      primitive_reverse_sides(&*pp);
 #endif
 
       if (flags & FLAGS_VERBOSE) {
         printf("Primitive %d in group %d:\n",
                group_get_num_primitives((*groups) + group), group);
-        primitive_print(pp, varray);
+        primitive_print(&*pp, varray);
         puts("");
       }
 
-      int const side = primitive_get_skew_side(pp, varray);
+      int const side = primitive_get_skew_side(&*pp, varray);
       if (side >= 0) {
         fprintf(stderr, "Warning: skew polygon detected "
                         "(side %d of primitive %d of object %d)\n",
@@ -376,7 +376,7 @@ static int parse_polygons(Reader * const r, const int object_count,
         return -1;
       }
 
-      primitive_set_colour(pp, colour_low + (colour_high ? 256 : 0));
+      primitive_set_colour(&*pp, colour_low + (colour_high ? 256 : 0));
     } else {
       /* Skip the vertex indices and colour byte */
       if (reader_fseek(r, num_sides + (long int)1, SEEK_CUR)) {
@@ -395,10 +395,10 @@ static int parse_polygons(Reader * const r, const int object_count,
   return num_polygons;
 }
 
-static int get_false_colour(const Primitive *pp, void *arg)
+static int get_false_colour(const Primitive *pp, _Optional void *arg)
 {
   NOT_USED(pp);
-  ColourInfo * const info = arg;
+  _Optional ColourInfo * const info = arg;
   assert(info != NULL);
 
   ++info->false_colour;
@@ -406,16 +406,16 @@ static int get_false_colour(const Primitive *pp, void *arg)
   return colour;
 }
 
-static int get_colour(const Primitive *const pp, void *arg)
+static int get_colour(const Primitive *const pp, _Optional void *arg)
 {
   assert(pp != NULL);
   assert(arg != NULL);
 
   int colour = primitive_get_colour(pp);
-  const ColourInfo * const info = arg;
+  _Optional const ColourInfo * const info = arg;
   assert(info != NULL);
   assert(info->frame >= 0);
-  const SFObjectColours * const pal = info->pal;
+  _Optional const SFObjectColours * const pal = info->pal;
 
   if ((colour >= (int)ARRAY_SIZE(pal->areas.static_colours)) &&
       (colour < (int)ARRAY_SIZE(pal->colour_mappings) -
@@ -458,7 +458,7 @@ static int get_colour(const Primitive *const pp, void *arg)
 }
 
 static int get_material(char *const buf, size_t const buf_size,
-                        int const colour, void *arg)
+                        int const colour, _Optional void *arg)
 {
   /* Emit logical colour number */
   NOT_USED(arg);
@@ -466,7 +466,7 @@ static int get_material(char *const buf, size_t const buf_size,
 }
 
 static int get_phys_material(char *const buf, size_t const buf_size,
-                            int const colour, void *arg)
+                            int const colour, _Optional void *arg)
 {
   /* Emit physical colour number */
   NOT_USED(arg);
@@ -474,7 +474,7 @@ static int get_phys_material(char *const buf, size_t const buf_size,
 }
 
 static int get_human_material(char *const buf, size_t const buf_size,
-                              int const colour, void *arg)
+                              int const colour, _Optional void *arg)
 {
   /* Emit physical colour name */
   NOT_USED(arg);
@@ -709,7 +709,10 @@ static void mark_vertices(
       const int nvertices = vertex_array_get_num_vertices(varray);
       for (int v = 0; v < nvertices; ++v) {
         if (!vertex_array_is_used(varray, v)) {
-          Coord (*coords)[3] = vertex_array_get_coords(varray, v);
+          _Optional Coord (*coords)[3] = vertex_array_get_coords(varray, v);
+          if (!coords) {
+            continue;
+          }
           printf("Vertex %d {%g,%g,%g} is unused (object %d)\n", v,
                  (*coords)[0], (*coords)[1], (*coords)[2], object_count);
           ++count;
@@ -720,10 +723,12 @@ static void mark_vertices(
   }
 }
 
-static bool parse_objects(Reader * const r, FILE * const out,
+static bool parse_objects(Reader * const r, _Optional FILE * const out,
                           const int first, const int last,
-                          const SFObjectType type, const char * const name,
-                          const SFObjectColours * const pal, const int frame,
+                          const SFObjectType type,
+                          _Optional const char * const name,
+                          _Optional const SFObjectColours * const pal,
+                          const int frame,
                           const unsigned int flags,
                           PlotType (* const plot_types)[MaxPlotType+1],
                           const int num_plot_types)
@@ -819,7 +824,7 @@ static bool parse_objects(Reader * const r, FILE * const out,
         /* Within the specified range of object numbers */
         if (name != NULL) {
           /* Only match the named object */
-          if (!strcmp(name, object_name)) {
+          if (!strcmp(&*name, object_name)) {
             match = true;
             /* Stop after finding the named object (assuming there are
                no others of the same name) */
@@ -1091,7 +1096,7 @@ static bool parse_objects(Reader * const r, FILE * const out,
         .false_colour = 0
       };
 
-      int (*get_material_cb)(char *, size_t, int, void *) = NULL;
+      _Optional output_primitives_get_material *get_material_cb = (output_primitives_get_material *)NULL;
       if (flags & FLAGS_PHYSICAL_COLOUR) {
         if (flags & FLAGS_HUMAN_READABLE) {
           get_material_cb = get_human_material;
@@ -1103,14 +1108,14 @@ static bool parse_objects(Reader * const r, FILE * const out,
         get_material_cb = get_material;
       }
 
-      if (!output_object(out, type_count, object_name, &o) ||
-          !output_vertices(out, vobject, &varray, (rot > 0) ? rot : -1) ||
-          !output_primitives(out, object_name, vtotal, vobject,
-                           &varray, groups, ARRAY_SIZE(groups),
-                           (flags & FLAGS_FALSE_COLOUR) ?
-                             get_false_colour : get_colour,
-                           get_material_cb,
-                           &info, vstyle, mstyle)) {
+      if (!output_object(&*out, type_count, object_name, &o) ||
+          !output_vertices(&*out, vobject, &varray, (rot > 0) ? rot : -1) ||
+          !output_primitives(&*out, object_name, vtotal, vobject,
+                             &varray, groups, ARRAY_SIZE(groups),
+                             (flags & FLAGS_FALSE_COLOUR) ?
+                               get_false_colour : get_colour,
+                             get_material_cb,
+                             &info, vstyle, mstyle)) {
         fprintf(stderr,
                 "Failed writing to output file: %s\n",
                 strerror(errno));
@@ -1221,9 +1226,10 @@ static bool parse_objects(Reader * const r, FILE * const out,
   return success;
 }
 
-bool sf3k_to_obj(Reader * const in, FILE * const out, const int first,
-                 const int last, const SFObjectType type,
-                 const char * const name, const SFObjectColours * const pal,
+bool sf3k_to_obj(Reader * const in, _Optional FILE * const out,
+                 const int first, const int last, const SFObjectType type,
+                 _Optional const char * const name,
+                 _Optional const SFObjectColours * const pal,
                  const int frame, const char * const mtl_file,
                  const unsigned int flags)
 {
@@ -1242,10 +1248,10 @@ bool sf3k_to_obj(Reader * const in, FILE * const out, const int first,
   assert(!(flags & ~FLAGS_ALL));
 
   if ((out != NULL) &&
-      fprintf(out, "# Star Fighter 3000 graphics\n"
-                   "# Converted by SF3KtoObj "VERSION_STRING"\n"
-                   "# Animation frame: %d\n\n"
-                   "mtllib %s\n", frame, mtl_file) < 0) {
+      fprintf(&*out, "# Star Fighter 3000 graphics\n"
+                     "# Converted by SF3KtoObj "VERSION_STRING"\n"
+                     "# Animation frame: %d\n\n"
+                     "mtllib %s\n", frame, mtl_file) < 0) {
     fprintf(stderr, "Failed writing to output file: %s\n", strerror(errno));
     success = false;
   } else {

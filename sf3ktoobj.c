@@ -48,16 +48,16 @@ enum {
                      the compression algorithm */
 };
 
-static bool process_file(const char * const input_file,
-                         const char * const output_file,
+static bool process_file(_Optional const char * const input_file,
+                         _Optional const char * const output_file,
                          const int first, const int last,
-                         const SFObjectType type, const char * const name,
-                         SFObjectColours * const pal, const int frame,
+                         const SFObjectType type, _Optional const char * const name,
+                         _Optional SFObjectColours * const pal, const int frame,
                          const char * const mtl_file,
                          const unsigned int flags, const bool time,
                          const bool raw)
 {
-  FILE *out = NULL, *in = NULL;
+  _Optional FILE *out = NULL, *in = NULL;
   bool success = true;
 
   assert(!(flags & ~FLAGS_ALL));
@@ -67,7 +67,7 @@ static bool process_file(const char * const input_file,
     if (flags & FLAGS_VERBOSE)
       printf("Opening input file '%s'\n", input_file);
 
-    in = fopen(input_file, "rb");
+    in = fopen(&*input_file, "rb");
     if (in == NULL) {
       fprintf(stderr, "Failed to open input file '%s': %s\n",
               input_file, strerror(errno));
@@ -86,7 +86,7 @@ static bool process_file(const char * const input_file,
       if (flags & FLAGS_VERBOSE)
         printf("Opening output file '%s'\n", output_file);
 
-      out = fopen(output_file, "w");
+      out = fopen(&*output_file, "w");
       if (out == NULL) {
         fprintf(stderr, "Failed to open output file '%s': %s\n",
                 output_file, strerror(errno));
@@ -98,14 +98,14 @@ static bool process_file(const char * const input_file,
     }
   }
 
-  if (success) {
+  if (success && in) {
     const clock_t start_time = time ? clock() : 0;
 
     Reader r;
     if (raw) {
-      reader_raw_init(&r, in);
+      reader_raw_init(&r, &*in);
     } else {
-      success = reader_gkey_init(&r, HistoryLog2, in);
+      success = reader_gkey_init(&r, HistoryLog2, &*in);
     }
 
     if (success) {
@@ -124,14 +124,14 @@ static bool process_file(const char * const input_file,
   if (in != NULL && in != stdin) {
     if (flags & FLAGS_VERBOSE)
       puts("Closing input file");
-    fclose(in);
+    fclose(&*in);
   }
 
   if (out != NULL && out != stdout) {
     if (flags & FLAGS_VERBOSE)
       puts("Closing output file");
 
-    if (fclose(out)) {
+    if (fclose(&*out)) {
       fprintf(stderr, "Failed to close output file '%s': %s\n",
                       output_file, strerror(errno));
       success = false;
@@ -139,8 +139,9 @@ static bool process_file(const char * const input_file,
   }
 
   /* Delete malformed output unless debugging is enabled */
-  if (!success && !(flags & FLAGS_VERBOSE) && out != NULL && out != stdout) {
-    remove(output_file);
+  if (!success && !(flags & FLAGS_VERBOSE) && out != NULL && out != stdout &&
+      output_file) {
+    remove(&*output_file);
   }
 
   return success;
@@ -199,16 +200,16 @@ static int syntax_msg(FILE * const f, const char * const path)
   return EXIT_FAILURE;
 }
 
-static SFObjectColours *load_palette(const char * const filename,
-                                     const unsigned int flags,
-                                     const bool raw)
+static _Optional SFObjectColours *load_palette(const char * const filename,
+                                               const unsigned int flags,
+                                               const bool raw)
 {
-  SFObjectColours *pal = NULL;
+  _Optional SFObjectColours *pal = NULL;
 
   if (flags & FLAGS_VERBOSE)
     printf("Opening palette file '%s'\n", filename);
 
-  FILE * const palette = fopen(filename, "rb");
+  _Optional FILE * const palette = fopen(filename, "rb");
   if (palette == NULL) {
     fprintf(stderr, "Failed to open palette file: %s\n", strerror(errno));
   } else {
@@ -220,16 +221,16 @@ static SFObjectColours *load_palette(const char * const filename,
       bool success = true;
 
       if (raw) {
-        reader_raw_init(&p, palette);
+        reader_raw_init(&p, &*palette);
       } else {
-        success = reader_gkey_init(&p, HistoryLog2, palette);
+        success = reader_gkey_init(&p, HistoryLog2, &*palette);
       }
 
       if (!success) {
         free(pal);
         pal = NULL;
       } else {
-        if (reader_fread(pal, sizeof(SFObjectColours), 1, &p) != 1) {
+        if (reader_fread(&*pal, sizeof(SFObjectColours), 1, &p) != 1) {
           fprintf(stderr, "Failed to read palette\n");
           free(pal);
           pal = NULL;
@@ -242,7 +243,7 @@ static SFObjectColours *load_palette(const char * const filename,
       puts("Closing palette file");
     }
 
-    fclose(palette);
+    fclose(&*palette);
   }
 
   return pal;
@@ -276,13 +277,13 @@ int main(int argc, const char *argv[])
 {
   int n, first = -1, last = -1, frame = 0;
   unsigned int flags = 0;
-  const char *name = NULL;
+  _Optional const char *name = NULL;
   SFObjectType type = (SFObjectType)-1;
   bool time = false, batch = false, raw = false;
   int rtn = EXIT_SUCCESS;
-  const char *output_file = NULL, *input_file = NULL, *palette_file = NULL,
-             *mtl_file = "sf3k.mtl";
-  SFObjectColours *pal = NULL;
+  _Optional const char *output_file = NULL, *input_file = NULL, *palette_file = NULL;
+  const char *mtl_file = "sf3k.mtl";
+  _Optional SFObjectColours *pal = NULL;
 
   assert(argc > 0);
   assert(argv != NULL);
@@ -511,7 +512,7 @@ int main(int argc, const char *argv[])
 
   if (palette_file != NULL) {
     /* A palette file name was specified, so open it */
-    pal = load_palette(palette_file, flags, raw);
+    pal = load_palette(&*palette_file, flags, raw);
     if (pal == NULL) {
       return EXIT_FAILURE;
     }

@@ -3,7 +3,7 @@ Star Fighter 3000 to Wavefront convertor
 
 (C) Christopher Bazley, 2016
 
-Version 0.08 (23 May 2024)
+Version 0.09 (11 Apr 2025)
 
 
 -----------------------------------------------------------------------------
@@ -1330,9 +1330,13 @@ Version 0.07 (21 Apr 2020)
 - Failure to close the output stream is now detected and treated like any
   other error since data may have been lost.
 
-0.08 (23 May 2024)
+Version 0.08 (23 May 2024)
 
 - Added Makefile and updated README for compiling on Linux.
+
+Version 0.09 (11 Apr 2025)
+
+- Dogfooding the _Optional qualifier.
 
 -----------------------------------------------------------------------------
 10   Compiling the software

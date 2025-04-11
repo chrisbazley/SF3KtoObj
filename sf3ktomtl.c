@@ -49,17 +49,17 @@ enum {
                      the compression algorithm */
 };
 
-static bool process_file(const char * const input_file,
-                         const char * const output_file,
+static bool process_file(_Optional const char * const input_file,
+                         _Optional const char * const output_file,
                          const int first, const int last,
                          const double d, const int illum,
-                         double (* const ksp)[3],
+                         _Optional double (* const ksp)[3],
                          const double ns, const int sharpness, const double ni,
                          double (* const tf)[3],
                          const unsigned int flags, const bool time,
                          const bool raw)
 {
-  FILE *out = NULL, *in = NULL;
+  _Optional FILE *out = NULL, *in = NULL;
   bool success = true;
 
   assert(!(flags & ~FLAGS_ALL));
@@ -69,7 +69,7 @@ static bool process_file(const char * const input_file,
     if (flags & FLAGS_VERBOSE)
       printf("Opening input file '%s'\n", input_file);
 
-    in = fopen(input_file, "rb");
+    in = fopen(&*input_file, "rb");
     if (in == NULL) {
       fprintf(stderr, "Failed to open input file '%s': %s\n",
               input_file, strerror(errno));
@@ -87,7 +87,7 @@ static bool process_file(const char * const input_file,
       if (flags & FLAGS_VERBOSE)
         printf("Opening output file '%s'\n", output_file);
 
-      out = fopen(output_file, "w");
+      out = fopen(&*output_file, "w");
       if (out == NULL) {
         fprintf(stderr, "Failed to open output file '%s': %s\n",
                 output_file, strerror(errno));
@@ -99,18 +99,18 @@ static bool process_file(const char * const input_file,
     }
   }
 
-  if (success) {
+  if (success && in && out) {
     const clock_t start_time = time ? clock() : 0;
 
     Reader r;
     if (raw) {
-      reader_raw_init(&r, in);
+      reader_raw_init(&r, &*in);
     } else {
-      success = reader_gkey_init(&r, HistoryLog2, in);
+      success = reader_gkey_init(&r, HistoryLog2, &*in);
     }
 
     if (success) {
-      success = sf3k_to_mtl(&r, out, first, last, d, illum, ksp, ns,
+      success = sf3k_to_mtl(&r, &*out, first, last, d, illum, ksp, ns,
                             sharpness, ni, tf, flags);
       reader_destroy(&r);
     }
@@ -125,14 +125,14 @@ static bool process_file(const char * const input_file,
   if (in != NULL && in != stdin) {
     if (flags & FLAGS_VERBOSE)
       puts("Closing input file");
-    fclose(in);
+    fclose(&*in);
   }
 
   if (out != NULL && out != stdout) {
     if (flags & FLAGS_VERBOSE)
       puts("Closing output file");
 
-    if (fclose(out)) {
+    if (fclose(&*out)) {
       fprintf(stderr, "Failed to close output file '%s': %s\n",
                       output_file, strerror(errno));
       success = false;
@@ -140,8 +140,9 @@ static bool process_file(const char * const input_file,
   }
 
   /* Delete malformed output unless debugging is enabled */
-  if (!success && !(flags & FLAGS_VERBOSE) && out != NULL && out != stdout) {
-    remove(output_file);
+  if (!success && !(flags & FLAGS_VERBOSE) && out != NULL && out != stdout &&
+      output_file) {
+    remove(&*output_file);
   }
 
   return success;
@@ -241,9 +242,9 @@ int main(int argc, const char *argv[])
   unsigned int flags = 0;
   bool specular = false, reflection_map = false, refraction = false;
   int rtn = EXIT_SUCCESS;
-  const char *output_file = NULL, *input_file = NULL;
+  _Optional const char *output_file = NULL, *input_file = NULL;
   double ks[3], ns = 200.0, ni = 1.0, tf[3] = {1.0, 1.0, 1.0}, d = 1.0;
-  double (*ksp)[3] = NULL; /* default is to use material colour */
+  _Optional double (*ksp)[3] = NULL; /* default is to use material colour */
 
   assert(argc > 0);
   assert(argv != NULL);

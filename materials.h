@@ -15,7 +15,7 @@
 
 bool sf3k_to_mtl(Reader *in, FILE *out,
                  int first, int last, double d,
-                 int illum, double (*ks)[3],
+                 int illum, _Optional double (*ks)[3],
                  double ns,
                  int sharpness, double ni,
                  double (*tf)[3],
