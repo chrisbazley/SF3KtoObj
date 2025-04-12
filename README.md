@@ -3,7 +3,7 @@ Star Fighter 3000 to Wavefront convertor
 
 (C) Christopher Bazley, 2016
 
-Version 0.09 (11 Apr 2025)
+Version 0.10 (13 Apr 2025)
 
 
 -----------------------------------------------------------------------------
@@ -1337,6 +1337,9 @@ Version 0.08 (23 May 2024)
 Version 0.09 (11 Apr 2025)
 
 - Dogfooding the _Optional qualifier.
+
+Version 0.10 (13 Apr 2025)
+- Use the renamed output_primitives_get_(colour|material) types.
 
 -----------------------------------------------------------------------------
 10   Compiling the software

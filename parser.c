@@ -1096,7 +1096,7 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
         .false_colour = 0
       };
 
-      _Optional output_primitives_get_material *get_material_cb = (output_primitives_get_material *)NULL;
+      OutputPrimitivesGetMaterialFn *get_material_cb;
       if (flags & FLAGS_PHYSICAL_COLOUR) {
         if (flags & FLAGS_HUMAN_READABLE) {
           get_material_cb = get_human_material;
