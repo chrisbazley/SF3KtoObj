@@ -395,7 +395,7 @@ static int parse_polygons(Reader * const r, const int object_count,
   return num_polygons;
 }
 
-static int get_false_colour(const Primitive *pp, _Optional void *arg)
+static int get_false_colour(const Primitive *pp, void *arg)
 {
   NOT_USED(pp);
   _Optional ColourInfo * const info = arg;
@@ -406,7 +406,7 @@ static int get_false_colour(const Primitive *pp, _Optional void *arg)
   return colour;
 }
 
-static int get_colour(const Primitive *const pp, _Optional void *arg)
+static int get_colour(const Primitive *const pp, void *arg)
 {
   assert(pp != NULL);
   assert(arg != NULL);
@@ -458,7 +458,7 @@ static int get_colour(const Primitive *const pp, _Optional void *arg)
 }
 
 static int get_material(char *const buf, size_t const buf_size,
-                        int const colour, _Optional void *arg)
+                        int const colour, void *arg)
 {
   /* Emit logical colour number */
   NOT_USED(arg);
@@ -466,7 +466,7 @@ static int get_material(char *const buf, size_t const buf_size,
 }
 
 static int get_phys_material(char *const buf, size_t const buf_size,
-                            int const colour, _Optional void *arg)
+                            int const colour, void *arg)
 {
   /* Emit physical colour number */
   NOT_USED(arg);
@@ -474,7 +474,7 @@ static int get_phys_material(char *const buf, size_t const buf_size,
 }
 
 static int get_human_material(char *const buf, size_t const buf_size,
-                              int const colour, _Optional void *arg)
+                              int const colour, void *arg)
 {
   /* Emit physical colour name */
   NOT_USED(arg);

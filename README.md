@@ -3,7 +3,7 @@ Star Fighter 3000 to Wavefront convertor
 
 (C) Christopher Bazley, 2016
 
-Version 0.10 (13 Apr 2025)
+Version 0.11 (11 May 2025)
 
 
 -----------------------------------------------------------------------------
@@ -1340,6 +1340,12 @@ Version 0.09 (11 Apr 2025)
 
 Version 0.10 (13 Apr 2025)
 - Use the renamed output_primitives_get_(colour|material) types.
+
+Version 0.11 (11 May 2025)
+- Replaced local definitions with an Optional.h header shared with other
+  programs.
+- The output_primitives function doesn't accept unvarnished null as a
+  callback argument anymore.
 
 -----------------------------------------------------------------------------
 10   Compiling the software
