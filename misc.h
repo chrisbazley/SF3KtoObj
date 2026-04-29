@@ -10,8 +10,12 @@
 #define PI (3.1415926535897896)
 
 /* Modify these definitions for Unix or Windows file paths. */
+#ifndef PATH_SEPARATOR
 #define PATH_SEPARATOR '.'
+#endif
+#ifndef EXT_SEPARATOR
 #define EXT_SEPARATOR '/' /* e.g. ADFS::4.$.Star3000.Graphics.Earth1/obj */
+#endif
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
