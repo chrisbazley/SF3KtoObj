@@ -18,7 +18,7 @@ set(OBJSOURCES
 
 add_executable(SF3KtoObj ${OBJSOURCES})
 
-target_link_libraries(SF3KtoObj ${OBJSOURCES} 
+target_link_libraries(SF3KtoObj PRIVATE 
     CBUtil
     Stream
     3dObj
@@ -40,7 +40,7 @@ set(MTLSOURCES
 
 add_executable(SF3KtoMtl ${MTLSOURCES})
 
-target_link_libraries(SF3KtoMtl ${MTLSOURCES} 
+target_link_libraries(SF3KtoMtl PRIVATE
     CBUtil
     Stream
     3dObj
