@@ -63,7 +63,6 @@ target_link_libraries(SF3KtoMtl PRIVATE
     CBUtil
     Stream
     3dObj
-    m
 )
 
 target_compile_definitions(SF3KtoMtl PRIVATE
