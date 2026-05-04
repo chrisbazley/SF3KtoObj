@@ -13,12 +13,12 @@
 
 #include "Reader.h"
 
-bool sf3k_to_mtl(Reader *in, FILE *out,
-                 int first, int last, double d,
-                 int illum, _Optional double (*ks)[3],
-                 double ns,
-                 int sharpness, double ni,
-                 double (*tf)[3],
-                 unsigned int flags);
+#if !defined(USE_OPTIONAL) && !defined(_Optional)
+#define _Optional
+#endif
+
+bool sf3k_to_mtl(Reader *in, FILE *out, int first, int last, double d,
+                 int illum, _Optional double (*ks)[3], double ns, int sharpness,
+                 double ni, double (*tf)[3], unsigned int flags);
 
 #endif /* MATERIALS_H */
