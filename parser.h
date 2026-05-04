@@ -7,12 +7,16 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "sfformats.h"
 
 #include "Reader.h"
+
+#if !defined(USE_OPTIONAL) && !defined(_Optional)
+#define _Optional
+#endif
 
 bool sf3k_to_obj(Reader *in, _Optional FILE *out, int first, int last,
                  SFObjectType type, _Optional const char *name,
