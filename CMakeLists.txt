@@ -30,8 +30,11 @@ else()
     add_compile_definitions(EXT_SEPARATOR='.')
 endif()
 
-set(OBJSOURCES 
-    sf3ktoobj.c parser names.c colours.c
+set(COMMON_SOURCES
+    misc.h flags.h version.h colours.c colours.h)
+
+set(OBJSOURCES
+    sf3ktoobj.c parser.c parser.h names.c names.h ${COMMON_SOURCES}
 )
 
 add_executable(SF3KtoObj ${OBJSOURCES})
@@ -51,8 +54,8 @@ target_compile_options(SF3KtoObj PRIVATE
     $<$<CONFIG:Release>:-O3>
 )
 
-set(MTLSOURCES 
-    sf3ktomtl.c materials.c colours.c
+set(MTLSOURCES
+    sf3ktomtl.c materials.c materials.h ${COMMON_SOURCES}
 )
 
 add_executable(SF3KtoMtl ${MTLSOURCES})
