@@ -47,11 +47,6 @@ target_link_libraries(SF3KtoObj PRIVATE
 
 target_compile_definitions(SF3KtoObj PRIVATE
     $<$<CONFIG:Debug>:DEBUG_OUTPUT>
-    $<$<CONFIG:Release>:NDEBUG>
-)
-
-target_compile_options(SF3KtoObj PRIVATE
-    $<$<CONFIG:Release>:-O3>
 )
 
 set(MTLSOURCES
@@ -68,10 +63,5 @@ target_link_libraries(SF3KtoMtl PRIVATE
 
 target_compile_definitions(SF3KtoMtl PRIVATE
     $<$<CONFIG:Debug>:DEBUG_OUTPUT>
-    $<$<CONFIG:Release>:NDEBUG>
-)
-
-target_compile_options(SF3KtoMtl PRIVATE
-    $<$<CONFIG:Release>:-O3>
 )
 
