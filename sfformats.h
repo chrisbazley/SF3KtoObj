@@ -55,6 +55,7 @@ SFPlotAction;
 
 typedef enum
 {
+  SFObjectType_Invalid = -1,
   SFObjectType_Ground, /* Ground objects (trees, buildings) */
   SFObjectType_Bit,    /* (Broken?) bits */
   SFObjectType_Aerial  /* Aerial things (fighters, coins, missiles)*/
