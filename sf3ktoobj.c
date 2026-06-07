@@ -278,7 +278,7 @@ int main(int argc, const char *argv[])
   int n, first = -1, last = -1, frame = 0;
   unsigned int flags = 0;
   _Optional const char *name = NULL;
-  SFObjectType type = (SFObjectType)-1;
+  SFObjectType type = SFObjectType_Invalid;
   bool time = false, batch = false, raw = false;
   int rtn = EXIT_SUCCESS;
   _Optional const char *output_file = NULL, *input_file = NULL, *palette_file = NULL;
@@ -420,7 +420,7 @@ int main(int argc, const char *argv[])
               break;
           }
         }
-        if (type == (SFObjectType)-1) {
+        if (type == SFObjectType_Invalid) {
           fputs("Bad object type\n", stderr);
           return syntax_msg(stderr, argv[0]);
         }
