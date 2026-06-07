@@ -742,7 +742,7 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
   assert(!reader_ferror(r));
   assert(first >= 0);
   assert(last == -1 || last >= first);
-  assert((type == (SFObjectType)-1) || (type == SFObjectType_Ground) ||
+  assert((type == SFObjectType_Invalid) || (type == SFObjectType_Ground) ||
          (type == SFObjectType_Bit) || (type == SFObjectType_Aerial));
   assert(frame >= 0);
   assert(!(flags & ~FLAGS_ALL));
@@ -815,9 +815,9 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
     const int type_count = type_counts[o.type];
     const char * const object_name = get_obj_name(o.type, type_count);
 
-    if (type == (SFObjectType)-1 || o.type == type) {
+    if (type == SFObjectType_Invalid || o.type == type) {
       int req_index = object_count;
-      if (type != (SFObjectType)-1) {
+      if (type != SFObjectType_Invalid) {
         req_index = type_count;
       }
       if ((req_index >= first) && (last == -1 || req_index <= last)) {
@@ -1241,7 +1241,7 @@ bool sf3k_to_obj(Reader * const in, _Optional FILE * const out,
   assert(!reader_feof(in));
   assert(first >= 0);
   assert(last == -1 || last >= first);
-  assert((type == (SFObjectType)-1) || (type == SFObjectType_Ground) ||
+  assert((type == SFObjectType_Invalid) || (type == SFObjectType_Ground) ||
          (type == SFObjectType_Bit) || (type == SFObjectType_Aerial));
   assert(frame >= 0);
   assert(mtl_file != NULL);
