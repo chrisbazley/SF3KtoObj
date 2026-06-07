@@ -771,7 +771,18 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
   /* Parse each object definition in turn until finding an end marker.
      There must be at least one. */
   do {
-    ObjectInfo o = { SFObjectType_Ground };
+    ObjectInfo o = {
+      .type = SFObjectType_Ground,
+      .coll_x = 0,
+      .coll_y = 0,
+      .score = 0,
+      .hits_or_min_z = 0,
+      .explosion_style = 0,
+      .plot_type = 0,
+      .expected_max_group = 0,
+      .clip_size = {0, 0},
+      .clip_dist = 0,
+    };
     SFCoordinateScale scale = SFCoordinateScale_Small;
     bool convert = false, match = false, stop = false;
     int rot = 0;
