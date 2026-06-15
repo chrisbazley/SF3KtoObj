@@ -1351,12 +1351,18 @@ Version 0.11 (11 May 2025)
 10   Compiling the software
 ---------------------------
 
-  Source code is only supplied for the command-line programs. To compile
-and link the code you will also require an ISO 9899:1999 standard 'C'
-library and four of my own libraries: 3dObjLib, CBUtilLib, StreamLib and
-GKeyLib. These are available separately from https://github.com/chrisbazley
+  If you have CMake, a build system generator, then you can use it to
+fetch libraries that are dependencies of these programs and build the
+libraries and programs with minimal manual intervention.
 
-  Three make files are supplied:
+For example, use the following commands to build on Linux:
+```
+  cmake -G 'Unix Makefiles' -S . -B build
+  cd build
+  make
+```
+
+  Three make files are also supplied:
 
 1. 'Makefile' is intended for use with GNU Make and the GNU C Compiler on Linux.
 
@@ -1380,6 +1386,11 @@ remove those suffixes from their names. You probably also need to create
 macro definitions in misc.h. These must be defined according to the file
 path convention on the the target platform (e.g. '\\' and '.' for DOS or
 Windows).
+
+  Source code is only supplied for the command-line programs. To compile
+and link the code you will also require an ISO 9899:1999 standard 'C'
+library and four of my own libraries: 3dObjLib, CBUtilLib, StreamLib and
+GKeyLib. These are available separately from https://github.com/chrisbazley
 
 -----------------------------------------------------------------------------
 11  Licence and Disclaimer
