@@ -11,10 +11,21 @@
 
 /* Modify these definitions for Unix or Windows file paths. */
 #ifndef PATH_SEPARATOR
+#ifdef _WIN32
+#define PATH_SEPARATOR '\\'
+#elif defined(ACORN_C)
+#define PATH_SEPARATOR '.'
+#else
+#define PATH_SEPARATOR '/'
+#endif
+#endif
+
+#ifndef EXT_SEPARATOR
+#ifdef ACORN_C
+#define EXT_SEPARATOR '/' /* e.g. ADFS::4.$.Star3000.Graphics.Earth1/obj */
+#else
 #define PATH_SEPARATOR '.'
 #endif
-#ifndef EXT_SEPARATOR
-#define EXT_SEPARATOR '/' /* e.g. ADFS::4.$.Star3000.Graphics.Earth1/obj */
 #endif
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
