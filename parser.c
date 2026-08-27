@@ -398,7 +398,7 @@ static int parse_polygons(Reader * const r, const int object_count,
 static int get_false_colour(const Primitive *pp, void *arg)
 {
   NOT_USED(pp);
-  _Optional ColourInfo * const info = arg;
+  ColourInfo * const info = arg;
   assert(info != NULL);
 
   ++info->false_colour;
@@ -412,7 +412,7 @@ static int get_colour(const Primitive *const pp, void *arg)
   assert(arg != NULL);
 
   int colour = primitive_get_colour(pp);
-  _Optional const ColourInfo * const info = arg;
+  const ColourInfo * const info = arg;
   assert(info != NULL);
   assert(info->frame >= 0);
   _Optional const SFObjectColours * const pal = info->pal;
