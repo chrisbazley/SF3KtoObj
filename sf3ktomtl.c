@@ -49,6 +49,8 @@ enum {
                      the compression algorithm */
 };
 
+/* NOLINTBEGIN(clang-analyzer-unix.Stream) */
+// Closing stdin or stdout would be stupid
 static bool process_file(_Optional const char * const input_file,
                          _Optional const char * const output_file,
                          const int first, const int last,
@@ -147,6 +149,7 @@ static bool process_file(_Optional const char * const input_file,
 
   return success;
 }
+/* NOLINTEND(clang-analyzer-unix.Stream) */
 
 static int syntax_msg(FILE * const f, const char * const path)
 {
