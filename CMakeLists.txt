@@ -35,6 +35,7 @@ if(USE_FORTIFY)
     )
 
     FetchContent_MakeAvailable(Fortify)
+    link_libraries(Fortify)
 endif()
 
 set(CMAKE_C_STANDARD 99)
@@ -118,4 +119,3 @@ target_link_libraries(SF3KtoMtl PRIVATE
 target_compile_definitions(SF3KtoMtl PRIVATE
     $<$<CONFIG:Debug>:DEBUG_OUTPUT>
 )
-
