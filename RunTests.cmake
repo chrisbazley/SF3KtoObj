@@ -123,6 +123,21 @@ if(FORTIFY_FAILURE_TEST)
     # object zero lets the parser stop after the first mesh, while retaining
     # the real compressed input and its decompression path.
     set(output_file "${OUTPUT_DIR}/space-object-0.obj")
+    set(reference_file "${OUTPUT_DIR}/space-object-0-reference.obj")
+    execute_process(
+        COMMAND "${CMAKE_COMMAND}" -E env
+            SF3K_FORTIFY_FAILURE_SIMULATION=0
+            "${SF3KTOOBJ}" -index 0
+            "${GRAPHICS_DIR}/Space" "${reference_file}"
+        RESULT_VARIABLE command_result
+        OUTPUT_QUIET
+    )
+    if(NOT command_result EQUAL 0)
+        message(FATAL_ERROR
+            "Reference conversion failed with code ${command_result}")
+    endif()
+    file(SHA256 "${reference_file}" expected_hash)
+
     execute_process(
         COMMAND "${SF3KTOOBJ}" -index 0
             "${GRAPHICS_DIR}/Space" "${output_file}"
@@ -136,14 +151,12 @@ if(FORTIFY_FAILURE_TEST)
             "${command_result}; see fortify.stdout and fortify.stderr in "
             "${TEST_DIR}")
     endif()
-    if(NOT EXISTS "${output_file}")
+    file(SHA256 "${output_file}" actual_hash)
+    if(NOT actual_hash STREQUAL expected_hash)
         message(FATAL_ERROR
-            "Fortify failure simulation did not create its output")
-    endif()
-    file(READ "${output_file}" output_prefix LIMIT 1)
-    if(output_prefix STREQUAL "")
-        message(FATAL_ERROR
-            "Fortify failure simulation created an empty output")
+            "Checksum mismatch for Fortify failure simulation output:\n"
+            "  expected: ${expected_hash}\n"
+            "  actual:   ${actual_hash}")
     endif()
     message(STATUS "SF3KtoObj Fortify failure simulation test passed")
     return()
