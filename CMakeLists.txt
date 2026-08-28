@@ -119,3 +119,36 @@ target_link_libraries(SF3KtoMtl PRIVATE
 target_compile_definitions(SF3KtoMtl PRIVATE
     $<$<CONFIG:Debug>:DEBUG_OUTPUT>
 )
+
+add_executable(SF3KDataDecompress tests/Decompress.c)
+target_link_libraries(SF3KDataDecompress PRIVATE Stream)
+
+enable_testing()
+add_test(NAME SF3KtoObjIntegrationTest COMMAND ${CMAKE_COMMAND}
+    -D SF3KTOOBJ=$<TARGET_FILE:SF3KtoObj>
+    -D SF3KTOMTL=$<TARGET_FILE:SF3KtoMtl>
+    -D DECOMPRESS=$<TARGET_FILE:SF3KDataDecompress>
+    -D DEBUG_OUTPUT=$<CONFIG:Debug>
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/RunTests.cmake
+)
+set_tests_properties(SF3KtoObjIntegrationTest PROPERTIES
+    TIMEOUT 180
+    LABELS integration
+)
+
+if(USE_FORTIFY)
+    add_test(NAME SF3KtoObjFortifyFailureTest COMMAND ${CMAKE_COMMAND}
+        -D SF3KTOOBJ=$<TARGET_FILE:SF3KtoObj>
+        -D SF3KTOMTL=$<TARGET_FILE:SF3KtoMtl>
+        -D DECOMPRESS=$<TARGET_FILE:SF3KDataDecompress>
+        -D DEBUG_OUTPUT=$<CONFIG:Debug>
+        -D FORTIFY_FAILURE_TEST=TRUE
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/RunTests.cmake
+    )
+    set_tests_properties(SF3KtoObjFortifyFailureTest PROPERTIES
+        ENVIRONMENT "SF3K_FORTIFY_FAILURE_SIMULATION=1"
+        LABELS "integration;fortify"
+        RUN_SERIAL TRUE
+        TIMEOUT 300
+    )
+endif()
