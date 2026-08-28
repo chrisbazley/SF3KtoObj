@@ -121,7 +121,7 @@ target_compile_definitions(SF3KtoMtl PRIVATE
 )
 
 add_executable(SF3KDataDecompress tests/Decompress.c)
-target_link_libraries(SF3KDataDecompress PRIVATE Stream)
+target_link_libraries(SF3KDataDecompress PRIVATE CBUtil Stream)
 
 enable_testing()
 add_test(NAME SF3KtoObjIntegrationTest COMMAND ${CMAKE_COMMAND}
