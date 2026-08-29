@@ -583,6 +583,9 @@ most recent vertex definition, which is assigned index -1. The '-negative'
 switch enables this output mode, which allows object models to be
 separated, extracted or rearranged later.
 
+  Zero coordinates have the canonical representation "0.000000" in OBJ
+output; the equivalent signed representation "-0.000000" is not emitted.
+
   Convert the mothership in file 'Earth1' with positive vertex indices:
 ```
   *SF3KtoObj -type s -index 14 <Star3000$Dir>.LandScapes.Graphics.Earth1
@@ -1346,6 +1349,9 @@ Version 0.11 (11 May 2025)
   programs.
 - The output_primitives function doesn't accept unvarnished null as a
   callback argument anymore.
+
+Version 0.12 (DD MMM YYYY)
+- Zero coordinates in OBJ output are now written without a negative sign.
 
 -----------------------------------------------------------------------------
 10   Compiling the software
