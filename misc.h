@@ -7,7 +7,7 @@
 #ifndef MISC_H
 #define MISC_H
 
-#define PI (3.1415926535897896)
+#include "MacroUtils.h"
 
 /* Modify these definitions for Unix or Windows file paths. */
 #ifndef PATH_SEPARATOR
@@ -27,18 +27,6 @@
 #define PATH_SEPARATOR '.'
 #endif
 #endif
-
-#define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
-
-/* Return the nearest word aligned value greater than or equal to a given
- * expression (useful for sprite widths, which must include right hand wastage).
- */
-#define WORD_ALIGN(value) (((value) + 3) & ~3)
-
-/* Suppress compiler warnings about an unused function argument. */
-#define NOT_USED(x) ((void)(x))
-
-#define HIGHEST(a, b) ((a) > (b) ? (a) : (b))
 
 #ifdef FORTIFY
 #include "fortify.h"
