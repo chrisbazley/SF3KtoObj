@@ -17,7 +17,7 @@ DebugObjectsObj = $(addprefix debug.,$(ObjectListObj))
 ReleaseObjectsObj = $(addprefix o.,$(ObjectListObj))
 DebugObjectsMtl = $(addprefix debug.,$(ObjectListMtl))
 ReleaseObjectsMtl = $(addprefix o.,$(ObjectListMtl))
-DebugLibs = C:o.Stubs Fortify:o.fortify C:o.CBDebugLib C:debug.CBUtilLib C:debug.3dObjLib C:debug.GKeyLib C:debug.StreamLib
+DebugLibs = C:o.Stubs C:o.CBPseudoLib Fortify:o.fortify C:o.CBDebugLib C:debug.CBUtilLib C:debug.3dObjLib C:debug.GKeyLib C:debug.StreamLib
 ReleaseLibs = C:o.StubsG C:o.CBUtilLib C:o.3dObjLib C:o.GKeyLib C:o.StreamLib
 
 # Final targets:

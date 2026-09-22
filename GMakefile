@@ -26,7 +26,7 @@ DebugObjectsChoc = $(addsuffix .debug,$(ObjectListChoc))
 ReleaseObjectsChoc = $(addsuffix .o,$(ObjectListChoc))
 DebugObjectsMtl = $(addsuffix .debug,$(ObjectListMtl))
 ReleaseObjectsMtl = $(addsuffix .o,$(ObjectListMtl))
-DebugLibs = Fortify CBDebug CBUtildbg GKeydbg Streamdbg 3dObjdbg
+DebugLibs = CBPseudo Fortify CBDebug CBUtildbg GKeydbg Streamdbg 3dObjdbg
 ReleaseLibs = CBUtil GKey Stream 3dObj
 
 # Final targets:
