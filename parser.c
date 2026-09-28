@@ -855,12 +855,12 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
     if (match && (out != NULL)) {
       convert = true;
 
-      const int byte = reader_fgetc(r);
-      if (byte == EOF) {
+      const int scale_byte = reader_fgetc(r);
+      if (scale_byte == EOF) {
         fprintf(stderr, "Failed to read scale (object %d)\n", object_count);
         break;
       }
-      scale = (SFCoordinateScale)byte;
+      scale = (SFCoordinateScale)scale_byte;
 
       rot = reader_fgetc(r);
       if (rot == EOF) {
@@ -1197,7 +1197,7 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
     if (last_explosion_num == SFObjects_EndOfData) {
       if (flags & FLAGS_VERBOSE) {
         printf("Found file terminator at %ld\n",
-               reader_ftell(r) - sizeof(int32_t));
+               reader_ftell(r) - (long int)sizeof(int32_t));
       }
       success = true;
     } else if (!(flags & FLAGS_SUMMARY) && stop) {

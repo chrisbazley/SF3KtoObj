@@ -351,8 +351,8 @@ int main(int argc, const char *argv[])
           return syntax_msg(stderr, argv[0]);
         }
         const double min = 0.0, max = 1.0;
-        for (size_t n = 0; n < ARRAY_SIZE(ks); ++n) {
-          if ((ks[n] < min) || (ks[n] > max)) {
+        for (size_t component = 0; component < ARRAY_SIZE(ks); ++component) {
+          if ((ks[component] < min) || (ks[component] > max)) {
             fprintf(stderr,
                     "Specular reflectivity value out of range %f .. %f\n",
                     min, max);
@@ -427,8 +427,8 @@ int main(int argc, const char *argv[])
           return syntax_msg(stderr, argv[0]);
         }
         const double min = 0.0, max = 1.0;
-        for (size_t n = 0; n < ARRAY_SIZE(ks); ++n) {
-          if ((tf[n] < min) || (tf[n] > max)) {
+        for (size_t component = 0; component < ARRAY_SIZE(tf); ++component) {
+          if ((tf[component] < min) || (tf[component] > max)) {
             fprintf(stderr,
                     "Transmission filter value out of range %f .. %f\n",
                     min, max);
