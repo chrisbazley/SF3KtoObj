@@ -147,6 +147,9 @@ static bool process_file(_Optional const char * const input_file,
                       output_file, strerror(errno));
       success = false;
     }
+  } else if (out == stdout && fflush(stdout) == EOF) {
+    fprintf(stderr, "Failed to flush standard output: %s\n", strerror(errno));
+    success = false;
   }
 
   /* Delete malformed output unless debugging is enabled */
