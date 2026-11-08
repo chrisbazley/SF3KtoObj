@@ -20,6 +20,9 @@
 
 /* ISO library header files */
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "strb.h"
 
 /* Local header files */
 #include "sfformats.h"
@@ -37,6 +40,7 @@ const char *get_type_name(const SFObjectType type)
 const char *get_obj_name(const SFObjectType type, const int index)
 {
   static char buffer[64];
+  strb_t *const name = STRB_TMP_USE(buffer);
   static const char * const ship_names[] =
   {
     /* Although many other object meshes are recognizable, these are
@@ -92,13 +96,17 @@ const char *get_obj_name(const SFObjectType type, const int index)
     if ((size_t)index < ARRAY_SIZE(ground_names)) {
       n = ground_names[index];
     } else {
-      sprintf(buffer, "ground_%d", index);
+      if (strb_printf(name, "ground_%d", index)) {
+        abort();
+      }
       n = buffer;
     }
     break;
 
   case SFObjectType_Bit:
-    sprintf(buffer, "bit_%d", index);
+    if (strb_printf(name, "bit_%d", index)) {
+      abort();
+    }
     n = buffer;
     break;
 
@@ -106,7 +114,9 @@ const char *get_obj_name(const SFObjectType type, const int index)
     if ((size_t)index < ARRAY_SIZE(ship_names)) {
       n = ship_names[index];
     } else {
-      sprintf(buffer, "ship_%d", index);
+      if (strb_printf(name, "ship_%d", index)) {
+        abort();
+      }
       n = buffer;
     }
     break;
