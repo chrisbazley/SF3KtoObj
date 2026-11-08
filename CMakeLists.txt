@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 project(SF3KToObj C)
 
 option(USE_OPTIONAL "Enable the _Optional qualifier" OFF)
@@ -8,11 +8,23 @@ option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
 include(FetchContent)
 
+FetchContent_Declare(strb GIT_REPOSITORY https://github.com/chrisbazley/strb_t.git
+    GIT_TAG 965efc73d6f03db7ba839e4c5c940d821e184a30)
+
 FetchContent_Declare(CBUtil GIT_REPOSITORY https://github.com/chrisbazley/CBUtilLib.git GIT_TAG main)
 FetchContent_Declare(Stream GIT_REPOSITORY https://github.com/chrisbazley/StreamLib.git GIT_TAG main)
 FetchContent_Declare(3dObj GIT_REPOSITORY https://github.com/chrisbazley/3dObjLib.git GIT_TAG main)
 
-FetchContent_MakeAvailable(CBUtil Stream 3dObj)
+FetchContent_MakeAvailable(strb CBUtil Stream 3dObj)
+# Apply the existing fault-injection allocator to strb's character storage too.
+if(USE_FORTIFY)
+    target_link_libraries(strb PRIVATE Fortify)
+    if(MSVC)
+        target_compile_options(strb PRIVATE /FIfortify.h)
+    else()
+        target_compile_options(strb PRIVATE -include fortify.h)
+    endif()
+endif()
 
 if(USE_OPTIONAL)
     if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
@@ -104,6 +116,7 @@ set(OBJSOURCES
 add_executable(SF3KtoObj ${OBJSOURCES})
 
 target_link_libraries(SF3KtoObj PRIVATE 
+    strb
     CBUtil
     Stream
     3dObj
@@ -120,6 +133,7 @@ set(MTLSOURCES
 add_executable(SF3KtoMtl ${MTLSOURCES})
 
 target_link_libraries(SF3KtoMtl PRIVATE
+    strb
     CBUtil
     Stream
     3dObj
