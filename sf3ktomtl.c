@@ -35,7 +35,7 @@
 /* CBUtilLib headers */
 #include "ArgUtils.h"
 #include "StrExtra.h"
-#include "StringBuff.h"
+#include "strb.h"
 
 /* Local headers */
 #include "misc.h"
@@ -522,18 +522,16 @@ int main(int argc, const char *argv[])
     for (; n < argc && rtn == EXIT_SUCCESS; n++) {
       /* Invent an output file name */
       assert(argv[n] != NULL);
-      StringBuffer default_output;
-      stringbuffer_init(&default_output);
-      if (!stringbuffer_append(&default_output, argv[n], SIZE_MAX) ||
-          !stringbuffer_append_separated(&default_output, EXT_SEPARATOR, "mtl")) {
+      STRB_DECL_ALLOC(default_output, 0);
+      if (strb_printf(default_output, "%s%c%s", argv[n], EXT_SEPARATOR, "mtl")) {
         fprintf(stderr, "Failed to allocate memory for output file path\n");
         rtn = EXIT_FAILURE;
-      } else if (!process_file(argv[n], stringbuffer_get_pointer(&default_output),
+      } else if (!process_file(argv[n], strb_cptr(default_output),
                                first, last, d, illum, ksp, ns, sharpness, ni,
                                &tf, flags, time, raw)) {
         rtn = EXIT_FAILURE;
       }
-      stringbuffer_destroy(&default_output);
+      strb_free(default_output);
     }
   } else {
     if (!process_file(input_file, output_file, first, last, d, illum, ksp, ns,
