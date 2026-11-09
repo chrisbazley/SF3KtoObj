@@ -20,7 +20,6 @@
 
 /* ISO library header files */
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "strb.h"
 
@@ -37,10 +36,8 @@ const char *get_type_name(const SFObjectType type)
   return type_names[type];
 }
 
-const char *get_obj_name(const SFObjectType type, const int index)
+int get_obj_name(strb_t *const name, const SFObjectType type, const int index)
 {
-  static char buffer[64];
-  strb_t *const name = STRB_TMP_USE(buffer);
   static const char * const ship_names[] =
   {
     /* Although many other object meshes are recognizable, these are
@@ -96,28 +93,19 @@ const char *get_obj_name(const SFObjectType type, const int index)
     if ((size_t)index < ARRAY_SIZE(ground_names)) {
       n = ground_names[index];
     } else {
-      if (strb_printf(name, "ground_%d", index)) {
-        abort();
-      }
-      n = buffer;
+      return strb_putf(name, "ground_%d", index);
     }
     break;
 
   case SFObjectType_Bit:
-    if (strb_printf(name, "bit_%d", index)) {
-      abort();
-    }
-    n = buffer;
+    return strb_putf(name, "bit_%d", index);
     break;
 
   case SFObjectType_Aerial:
     if ((size_t)index < ARRAY_SIZE(ship_names)) {
       n = ship_names[index];
     } else {
-      if (strb_printf(name, "ship_%d", index)) {
-        abort();
-      }
-      n = buffer;
+      return strb_putf(name, "ship_%d", index);
     }
     break;
 
@@ -126,5 +114,5 @@ const char *get_obj_name(const SFObjectType type, const int index)
     break;
   }
 
-  return n;
+  return strb_puts(name, n);
 }

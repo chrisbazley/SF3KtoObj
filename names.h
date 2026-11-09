@@ -9,8 +9,11 @@
 
 #include "sfformats.h"
 
+#include "strb.h"
+
 const char *get_type_name(SFObjectType type);
 
-const char *get_obj_name(SFObjectType type, int index);
+/* Write the object name at the current position; return EOF on failure, zero on success. */
+int get_obj_name(strb_t *name, SFObjectType type, int index);
 
 #endif /* NAMES_H */

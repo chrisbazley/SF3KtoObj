@@ -823,7 +823,11 @@ static bool parse_objects(Reader * const r, _Optional FILE * const out,
 
     assert((size_t)o.type < ARRAY_SIZE(type_counts));
     const int type_count = type_counts[o.type];
-    const char * const object_name = get_obj_name(o.type, type_count);
+    STRB_DECL_FIXED(object_name_buffer, 64);
+    if (get_obj_name(object_name_buffer, o.type, type_count)) {
+      abort();
+    }
+    const char *const object_name = strb_cptr(object_name_buffer);
 
     if (type == SFObjectType_Invalid || o.type == type) {
       int req_index = object_count;
