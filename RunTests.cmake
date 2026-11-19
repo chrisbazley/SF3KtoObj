@@ -21,20 +21,31 @@ set(DATA_DIR "${TEST_DIR}/data")
 set(OUTPUT_DIR "${TEST_DIR}/output")
 file(MAKE_DIRECTORY "${TEST_DIR}" "${DATA_DIR}" "${OUTPUT_DIR}")
 
-message(STATUS "Downloading the Star Fighter 3000 game data...")
-file(DOWNLOAD
-    "http://www.starfighter.acornarcade.com/download/sf3000.zip"
-    "${ARCHIVE}"
-    EXPECTED_HASH
-        SHA256=4f4eff756d475bd5ab1b6f3a569e57a6d51123e4509aab0c30921ee065b64928
-    STATUS download_status
-    SHOW_PROGRESS
-    TIMEOUT 60
-)
-list(GET download_status 0 download_result)
-list(GET download_status 1 download_error)
-if(NOT download_result EQUAL 0)
-    message(FATAL_ERROR "Failed to download game data: ${download_error}")
+set(expected_hash 4f4eff756d475bd5ab1b6f3a569e57a6d51123e4509aab0c30921ee065b64928)
+if(EXISTS "${ARCHIVE}")
+    file(SHA256 "${ARCHIVE}" actual_hash)
+endif()
+if(NOT actual_hash STREQUAL expected_hash)
+    foreach(url IN ITEMS
+            "http://www.starfighter.acornarcade.com/download/sf3000.zip"
+            "https://web.archive.org/web/20240913023248id_/http://starfighter.acornarcade.com/download/sf3000.zip")
+        message(STATUS "Downloading game data from ${url}")
+        file(DOWNLOAD "${url}" "${ARCHIVE}.part" STATUS status TIMEOUT 60)
+        list(GET status 0 result)
+        if(result EQUAL 0)
+            file(SHA256 "${ARCHIVE}.part" actual_hash)
+            if(actual_hash STREQUAL expected_hash)
+                file(RENAME "${ARCHIVE}.part" "${ARCHIVE}")
+                break()
+            endif()
+            set(status "SHA-256 mismatch")
+        endif()
+        file(REMOVE "${ARCHIVE}.part")
+        message(STATUS "Download failed: ${status}")
+    endforeach()
+    if(NOT actual_hash STREQUAL expected_hash)
+        message(FATAL_ERROR "Could not obtain a verified copy of sf3000.zip")
+    endif()
 endif()
 
 message(STATUS "Extracting the Star Fighter 3000 game data...")
