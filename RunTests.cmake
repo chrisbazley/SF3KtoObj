@@ -23,7 +23,7 @@ file(MAKE_DIRECTORY "${TEST_DIR}" "${DATA_DIR}" "${OUTPUT_DIR}")
 
 message(STATUS "Downloading the Star Fighter 3000 game data...")
 file(DOWNLOAD
-    "http://www.starfighter.acornarcade.com/download/sf3000.zip"
+    "https://web.archive.org/web/20240913023248id_/http://starfighter.acornarcade.com/download/sf3000.zip"
     "${ARCHIVE}"
     EXPECTED_HASH
         SHA256=4f4eff756d475bd5ab1b6f3a569e57a6d51123e4509aab0c30921ee065b64928
