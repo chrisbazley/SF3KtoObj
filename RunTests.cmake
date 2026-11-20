@@ -1,5 +1,5 @@
 # RunTests.cmake
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 if(NOT SF3KTOOBJ)
     set(SF3KTOOBJ "./SF3KtoObj")
@@ -64,14 +64,26 @@ set(LANDSCAPES_DIR "${DATA_DIR}/!Star3000/LandScapes")
 set(GRAPHICS_DIR "${LANDSCAPES_DIR}/Graphics")
 set(PALETTE_DIR "${LANDSCAPES_DIR}/Palette")
 
-if(DEBUG_OUTPUT)
-    # Debug output is intentionally very verbose. Discard it for conversions
-    # whose result is written to a named file; otherwise CTest must retain a
-    # very large log in memory.
-    set(command_output_args OUTPUT_QUIET)
-else()
-    set(command_output_args)
-endif()
+function(run_conversion output)
+    # The converter and its libraries write Debug traces to both streams.
+    if(DEBUG_OUTPUT)
+        set(log "${output}.stderr")
+        set(output_args OUTPUT_QUIET ERROR_FILE "${log}")
+    endif()
+    execute_process(COMMAND ${ARGN} "${output}"
+        RESULT_VARIABLE result ${output_args})
+    if(NOT result STREQUAL "0")
+        if(DEBUG_OUTPUT AND EXISTS "${log}")
+            file(SIZE "${log}" size)
+            math(EXPR offset "${size} - 4096")
+            if(offset LESS 0)
+                set(offset 0)
+            endif()
+            file(READ "${log}" tail OFFSET ${offset} LIMIT 4096)
+        endif()
+        message(FATAL_ERROR "Conversion of ${output} failed (${result})\n${tail}")
+    endif()
+endfunction()
 
 # Ignore the generated program-version comment and normalize host line endings
 # before comparing output with files published in graphics.zip.
@@ -101,15 +113,7 @@ endfunction()
 function(convert_obj input output expected_hash)
     message(STATUS "Converting ${output}.obj...")
     set(output_file "${OUTPUT_DIR}/${output}.obj")
-    execute_process(
-        COMMAND "${SF3KTOOBJ}" ${ARGN} "${input}" "${output_file}"
-        RESULT_VARIABLE command_result
-        ${command_output_args}
-    )
-    if(NOT command_result EQUAL 0)
-        message(FATAL_ERROR
-            "Conversion of ${output}.obj failed with code ${command_result}")
-    endif()
+    run_conversion("${output_file}" "${SF3KTOOBJ}" ${ARGN} "${input}")
     verify_body_checksum("${output_file}" "${output}.obj" "${expected_hash}")
 endfunction()
 
@@ -135,18 +139,9 @@ if(FORTIFY_FAILURE_TEST)
     # the real compressed input and its decompression path.
     set(output_file "${OUTPUT_DIR}/space-object-0.obj")
     set(reference_file "${OUTPUT_DIR}/space-object-0-reference.obj")
-    execute_process(
-        COMMAND "${CMAKE_COMMAND}" -E env
-            SF3K_FORTIFY_FAILURE_SIMULATION=0
-            "${SF3KTOOBJ}" -index 0
-            "${GRAPHICS_DIR}/Space" "${reference_file}"
-        RESULT_VARIABLE command_result
-        OUTPUT_QUIET
-    )
-    if(NOT command_result EQUAL 0)
-        message(FATAL_ERROR
-            "Reference conversion failed with code ${command_result}")
-    endif()
+    run_conversion("${reference_file}" "${CMAKE_COMMAND}" -E env
+        SF3K_FORTIFY_FAILURE_SIMULATION=0
+        "${SF3KTOOBJ}" -index 0 "${GRAPHICS_DIR}/Space")
     file(SHA256 "${reference_file}" expected_hash)
 
     execute_process(
@@ -236,15 +231,7 @@ endforeach()
 
 message(STATUS "Converting the published material library...")
 set(MTL_OUTPUT "${OUTPUT_DIR}/sf3k.mtl")
-execute_process(
-    COMMAND "${SF3KTOMTL}" -physical -human
-        "${DEFAULT_PALETTE}" "${MTL_OUTPUT}"
-    RESULT_VARIABLE command_result
-    ${command_output_args}
-)
-if(NOT command_result EQUAL 0)
-    message(FATAL_ERROR "Conversion of sf3k.mtl failed")
-endif()
+run_conversion("${MTL_OUTPUT}" "${SF3KTOMTL}" -physical -human "${DEFAULT_PALETTE}")
 verify_body_checksum("${MTL_OUTPUT}" "sf3k.mtl"
     20b0fb6ec607b42e50890bf7d8eae0c87f50790b16a5ce7de607511482399822)
 
