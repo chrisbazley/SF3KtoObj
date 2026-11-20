@@ -12,5 +12,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api --allow-escape-sequences repos/chrisbazley/SF3KtoObj/actions/jobs/136332722699/logs > "$RUNNER_TEMP/job.log"
+          gh api --allow-escape-sequences repos/chrisbazley/SF3KtoObj/actions/jobs/136406706620/logs > "$RUNNER_TEMP/job.log"
           grep -iE 'CMake Error|\*\*\*Timeout|\*\*\*Failed|tests passed|test #[12]:|converting .*\.obj|conversion failed with code|download failed|timeout was reached|Checksum mismatch|see fortify|^.*-- Extracting' "$RUNNER_TEMP/job.log" | tail -80
+          awk '/-- Converting/{n=4} n>0{print substr($0,1,250);n--} NR==10000||NR==50000||NR==100000{print substr($0,1,250)}' "$RUNNER_TEMP/job.log" | head -100
